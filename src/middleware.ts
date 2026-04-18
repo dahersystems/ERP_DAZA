@@ -3,15 +3,9 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)']);
 
 export default clerkMiddleware(async (auth, request) => {
-  const { userId, redirectToSignIn } = await auth();
-  
-  console.log(`[Middleware] URL: ${request.url} | UserID: ${userId}`);
-
-  if (!isPublicRoute(request) && !userId) {
-    console.log(`[Middleware] Redirecting to sign-in...`);
-    return redirectToSignIn();
-  }
-}, { debug: true });
+  // Autenticação desativada temporariamente conforme solicitado
+  console.log(`[Middleware - AUTH DISABLED] URL: ${request.url}`);
+});
 
 
 export const config = {

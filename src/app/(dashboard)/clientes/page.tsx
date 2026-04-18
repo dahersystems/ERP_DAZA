@@ -8,9 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Search, MessageCircle, Star } from "lucide-react"
 import { getCustomers } from "@/actions/customers"
 import { CustomerFormModal } from "./customer-form-modal"
+import { WhatsAppButton } from "./whatsapp-button"
 
 export default async function ClientesPage() {
   const customersResult = await getCustomers()
@@ -20,10 +22,30 @@ export default async function ClientesPage() {
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Clientes</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Clientes</h2>
           <p className="text-muted-foreground mt-1">Gerencie a carteira de clientes e pontos de fidelidade.</p>
         </div>
         <CustomerFormModal />
+      </div>
+
+      {/* Stats Strip */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="bg-card border border-border/60 rounded-xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Total Clientes</p>
+          <p className="text-3xl font-bold text-foreground">{customers.length}</p>
+        </div>
+        <div className="bg-card border border-border/60 rounded-xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Com WhatsApp</p>
+          <p className="text-3xl font-bold text-green-600">
+            {customers.filter(c => c.phone && c.phone.replace(/\D/g, '').length >= 10).length}
+          </p>
+        </div>
+        <div className="bg-card border border-border/60 rounded-xl p-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Pontos Emitidos</p>
+          <p className="text-3xl font-bold text-primary">
+            {customers.reduce((acc, c) => acc + (c.loyaltyPoints || 0), 0).toLocaleString('pt-BR')}
+          </p>
+        </div>
       </div>
 
       <div className="bg-card border border-border/60 rounded-xl shadow-sm overflow-hidden">
@@ -47,26 +69,54 @@ export default async function ClientesPage() {
                 <TableHead className="font-semibold text-secondary-foreground h-11">Nome</TableHead>
                 <TableHead className="font-semibold text-secondary-foreground h-11">Documento</TableHead>
                 <TableHead className="font-semibold text-secondary-foreground h-11">Email</TableHead>
-                <TableHead className="font-semibold text-secondary-foreground h-11">Pontos Flex</TableHead>
+                <TableHead className="font-semibold text-secondary-foreground h-11">Telefone</TableHead>
+                <TableHead className="font-semibold text-secondary-foreground h-11">
+                  <span className="flex items-center gap-1">
+                    <Star className="w-3.5 h-3.5 text-primary" /> Pontos
+                  </span>
+                </TableHead>
                 <TableHead className="text-right font-semibold text-secondary-foreground h-11">Ações</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {customers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
-                    Nenhum cliente cadastrado.
+                  <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
+                    Nenhum cliente cadastrado. Clique em &quot;Novo Cliente&quot; para começar.
                   </TableCell>
                 </TableRow>
               ) : (
                 customers.map((customer) => (
                   <TableRow key={customer.id} className="hover:bg-muted/30 transition-colors">
                     <TableCell className="font-medium text-foreground py-4">{customer.name}</TableCell>
-                    <TableCell className="text-muted-foreground py-4">{customer.document}</TableCell>
+                    <TableCell className="text-muted-foreground py-4 font-mono text-sm">{customer.document}</TableCell>
                     <TableCell className="text-muted-foreground py-4">{customer.email || "-"}</TableCell>
-                    <TableCell className="text-foreground font-bold py-4 text-primary">{customer.loyaltyPoints}</TableCell>
+                    <TableCell className="py-4">
+                      {customer.phone ? (
+                        <span className="text-sm text-foreground font-medium">{customer.phone}</span>
+                      ) : (
+                        <span className="text-muted-foreground/50 text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="py-4">
+                      {customer.loyaltyPoints > 0 ? (
+                        <Badge variant="outline" className="border-primary/40 text-primary font-semibold">
+                          <Star className="w-3 h-3 mr-1 fill-primary" />
+                          {customer.loyaltyPoints}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground/50 text-sm">0</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right py-4">
-                      <Button variant="ghost" size="sm" className="text-secondary hover:text-primary hover:bg-primary/10">Editar</Button>
+                      <div className="flex items-center justify-end gap-2">
+                        {customer.phone && (
+                          <WhatsAppButton phone={customer.phone} name={customer.name} />
+                        )}
+                        <Button variant="ghost" size="sm" className="text-secondary hover:text-primary hover:bg-primary/10">
+                          Editar
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

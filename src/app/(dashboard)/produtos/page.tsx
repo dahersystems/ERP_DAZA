@@ -38,7 +38,7 @@ export default async function ProdutosPage() {
     <div className="flex flex-col gap-6 max-w-[1400px] mx-auto w-full">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-foreground">Produtos</h2>
+          <h2 className="text-3xl font-semibold tracking-tight text-foreground">Produtos</h2>
           <p className="text-muted-foreground mt-1">Gerencie seu catálogo de produtos e controle de estoque.</p>
         </div>
         <ProductFormModal categories={categories} />
@@ -86,16 +86,16 @@ export default async function ProdutosPage() {
                     <TableCell className="font-medium text-foreground py-4">{product.sku}</TableCell>
                     <TableCell className="text-muted-foreground py-4">{product.name}</TableCell>
                     <TableCell className="text-muted-foreground py-4">{product.categoryName || "-"}</TableCell>
-                    <TableCell className="text-foreground font-semibold py-4">
+                    <TableCell className="text-foreground font-medium py-4">
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(product.salePrice))}
                     </TableCell>
                     <TableCell className="py-4">
                       {product.currentStock <= product.minStockAlert ? (
-                        <Badge variant="outline" className="bg-red-100 text-destructive border-transparent hover:bg-red-100">
+                        <Badge variant="outline" className="text-destructive border-destructive/30">
                           {product.currentStock} restante
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-green-100 text-green-800 border-transparent hover:bg-green-100">
+                        <Badge variant="outline" className="text-green-600 border-green-600/30">
                           {product.currentStock} em estoque
                         </Badge>
                       )}
